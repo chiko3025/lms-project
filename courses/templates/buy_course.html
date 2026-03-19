@@ -360,6 +360,7 @@
             padding: 8px;
             border-radius: 6px;
             display: inline-block;
+            word-break: break-all;
         }
 
         /* Pay Button */
@@ -522,7 +523,10 @@
                     {% endif %}
                     
                     <h2>{{ course.title }}</h2>
-                    <p>{{ course.description }}</p>
+                    <p>
+                        This is a premium course designed to take your skills to the next level. 
+                        Get full access to video content, source code, and certification upon completion.
+                    </p>
                     
                     <div style="margin-top: auto; padding-top: 20px;">
                         <h3 style="color: var(--text-muted); font-size: 14px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px;">Course Includes</h3>
@@ -538,7 +542,7 @@
                 <div class="payment-summary">
                     
                     <div class="price-row">
-                        <span>Subtotal</span>
+                        <span>Course Price</span>
                         <span>₹{{ course.price }}</span>
                     </div>
                     <div class="price-row">
@@ -576,11 +580,84 @@
 
     <!-- Razorpay Logic (Strictly Preserved) -->
     <script>
-        var options = {
-            key: "{{ razorpay_key }}",
-            amount: "{{ payment.amount }}",
-            currency: "INR",
-            name: "{{ course.title }}",
-            description: "Course Purchase",
-            order_id: "{{ payment.id }}",
-            handler: function
+    console.log("KEY:", "{{ razorpay_key }}");
+    console.log("ORDER:", "{{ payment.id }}");
+    console.log("AMOUNT:", {{ payment.amount }});
+
+    // ✅ CSRF FUNCTION (ADD THIS AT TOP)
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+
+    var options = {
+        key: "{{ razorpay_key }}",
+        amount: {{ payment.amount }},
+        currency: "INR",
+        name: "{{ course.title }}",
+        description: "Course Purchase",
+        order_id: "{{ payment.id }}",
+
+        // 🔥 UPDATED HANDLER (IMPORTANT)
+        handler: function (response) {
+
+            fetch("/verify-payment/", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRFToken": getCookie("csrftoken")   // ✅ REQUIRED
+                },
+                body: JSON.stringify({
+                    razorpay_payment_id: response.razorpay_payment_id,
+                    razorpay_order_id: response.razorpay_order_id,
+                    razorpay_signature: response.razorpay_signature,
+                    course_id: "{{ course.id }}"
+                })
+            })
+            .then(res => res.json())
+            .then(data => {
+
+                if (data.status === "success") {
+                    alert("Payment Successful ✅");
+
+                    // ✅ Redirect AFTER verification
+                    window.location.href = "/my-courses/";
+                } else {
+                    alert("Payment verification failed ❌");
+                }
+            })
+            .catch(() => {
+                alert("Something went wrong");
+            });
+        }
+    };
+
+    document.getElementById("pay-btn").onclick = function (e) {
+        console.log("BUTTON CLICKED");
+        var rzp = new Razorpay(options);
+        rzp.open();
+        e.preventDefault();
+    };
+
+    // Sidebar Toggle Script
+    const sidebar = document.getElementById('sidebar');
+    const sidebarToggle = document.getElementById('sidebarToggle');
+    
+    if(sidebarToggle) {
+        sidebarToggle.addEventListener('click', () => {
+            sidebar.classList.toggle('active-mobile');
+        });
+    }
+</script>
+</body>
+</html>

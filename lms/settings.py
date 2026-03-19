@@ -23,9 +23,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-6-6j+0un4arpuwjyj4bueg3ej7y(@!^9=i6=izh2ap=ruar8+q'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = [".onrender.com"]
 
 
 # Application definition
@@ -59,7 +59,7 @@ TEMPLATES = [
 {
 'BACKEND': 'django.template.backends.django.DjangoTemplates',
 
-'DIRS': [BASE_DIR / 'templates'],
+'DIRS': [],
 
 'APP_DIRS': True,
 
@@ -132,5 +132,8 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 LOGIN_URL = "/login/"
-RAZORPAY_KEY_ID = "rzp_test_SRN61pYvBf0wJc"
-RAZORPAY_KEY_SECRET = "ekb6fIBMcwMpNakbWAtO0Vak"
+RAZORPAY_KEY_ID = os.environ.get("rzp_test_SRN61pYvBf0wJc")
+RAZORPAY_KEY_SECRET = os.environ.get("ekb6fIBMcwMpNakbWAtO0Vak")
+SECURE_SSL_REDIRECT = True
+SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SECURE = True

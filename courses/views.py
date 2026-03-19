@@ -12,42 +12,52 @@ from django.db.models.functions import TruncMonth
 from django.views.decorators.csrf import csrf_exempt
 from django.http import HttpResponse
 
-@csrf_exempt
+@csrf_exempt   # ✅ keep this for now (avoids 400 issue)
+@login_required
 def verify_payment(request):
 
-    if request.method == "POST":
+    if request.method != "POST":
+        return JsonResponse({"status": "invalid request"})
 
+    try:
         data = json.loads(request.body)
 
-        payment_id = data.get("payment_id")
-        order_id = data.get("order_id")
-        signature = data.get("signature")
+        payment_id = data.get("razorpay_payment_id")
+        order_id = data.get("razorpay_order_id")
+        signature = data.get("razorpay_signature")
         course_id = data.get("course_id")
+
+        if not all([payment_id, order_id, signature, course_id]):
+            return JsonResponse({"status": "missing data"})
 
         client = razorpay.Client(
             auth=(settings.RAZORPAY_KEY_ID, settings.RAZORPAY_KEY_SECRET)
         )
 
-        try:
+        # 🔐 Verify payment
+        client.utility.verify_payment_signature({
+            "razorpay_order_id": order_id,
+            "razorpay_payment_id": payment_id,
+            "razorpay_signature": signature
+        })
 
-            client.utility.verify_payment_signature({
-                "razorpay_order_id": order_id,
-                "razorpay_payment_id": payment_id,
-                "razorpay_signature": signature
-            })
+        # ✅ Get course safely
+        course = get_object_or_404(Course, id=course_id)
 
-            course = Course.objects.get(id=course_id)
+        # ✅ Prevent duplicate purchase
+        Purchase.objects.get_or_create(
+            user=request.user,
+            course=course
+        )
 
-            Purchase.objects.get_or_create(
-                user=request.user,
-                course=course
-            )
+        return JsonResponse({"status": "success"})
 
-            return JsonResponse({"status": "success"})
+    except razorpay.errors.SignatureVerificationError:
+        return JsonResponse({"status": "failed"})
 
-        except:
-
-            return JsonResponse({"status": "failed"})
+    except Exception as e:
+        print("Verification Error:", e)
+        return JsonResponse({"status": "error"})
 
 def course_list(request):
 
@@ -90,25 +100,28 @@ def course_detail(request, course_id):
     return render(request, 'course_detail.html', context)
 
 
+@login_required
 def buy_course(request, course_id):
-
     course = get_object_or_404(Course, id=course_id)
 
-    client = razorpay.Client(auth=(settings.RAZORPAY_KEY_ID, settings.RAZORPAY_KEY_SECRET))
+    client = razorpay.Client(auth=(
+        settings.RAZORPAY_KEY_ID,
+        settings.RAZORPAY_KEY_SECRET
+    ))
+
+    amount = int(course.price * 100)
 
     payment = client.order.create({
-        "amount": course.price * 100,   # Razorpay uses paise
+        "amount": amount,
         "currency": "INR",
         "payment_capture": 1
     })
 
-    context = {
+    return render(request, "buy_course.html", {
         "course": course,
         "payment": payment,
         "razorpay_key": settings.RAZORPAY_KEY_ID
-    }
-
-    return render(request, "buy_course.html", context)
+    })
 
 @csrf_exempt
 def payment_success(request):
@@ -150,7 +163,7 @@ def save_progress(request):
             video=video
         )
 
-        progress.seconds_watched = seconds
+        progress.watched_seconds = seconds
         progress.save()
 
         return JsonResponse({"status": "saved"})
