@@ -41,8 +41,6 @@ INSTALLED_APPS = [
     'users',
     'courses',
     'payments',
-    'cloudinary',
-    'cloudinary_storage',
 ]
 
 MIDDLEWARE = [
