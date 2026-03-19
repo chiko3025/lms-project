@@ -102,26 +102,33 @@ def course_detail(request, course_id):
 
 @login_required
 def buy_course(request, course_id):
-    course = get_object_or_404(Course, id=course_id)
+    try:
+        course = get_object_or_404(Course, id=course_id)
 
-    client = razorpay.Client(auth=(
-        settings.RAZORPAY_KEY_ID,
-        settings.RAZORPAY_KEY_SECRET
-    ))
+        if not settings.RAZORPAY_KEY_ID or not settings.RAZORPAY_KEY_SECRET:
+            return HttpResponse("Razorpay keys not configured")
 
-    amount = int(course.price * 100)
+        client = razorpay.Client(auth=(
+            settings.RAZORPAY_KEY_ID,
+            settings.RAZORPAY_KEY_SECRET
+        ))
 
-    payment = client.order.create({
-        "amount": amount,
-        "currency": "INR",
-        "payment_capture": 1
-    })
+        amount = int(course.price * 100)
 
-    return render(request, "buy_course.html", {
-        "course": course,
-        "payment": payment,
-        "razorpay_key": settings.RAZORPAY_KEY_ID
-    })
+        payment = client.order.create({
+            "amount": amount,
+            "currency": "INR",
+            "payment_capture": 1
+        })
+
+        return render(request, "buy_course.html", {
+            "course": course,
+            "payment": payment,
+            "razorpay_key": settings.RAZORPAY_KEY_ID
+        })
+
+    except Exception as e:
+        return HttpResponse(f"ERROR: {str(e)}")
 
 @csrf_exempt
 def payment_success(request):
