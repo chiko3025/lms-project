@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+</head>
+
+<body class="bg-gray-100">
+
+<div class="flex">
+
+<!-- Sidebar -->
+
+<div class="w-64 bg-gray-900 text-white min-h-screen p-6">
+
+<h1 class="text-2xl font-bold mb-8">LMS Admin</h1>
+
+<ul class="space-y-4">
+
+<li><a href="/admin-dashboard/">Dashboard</a></li>
+
+<li><a href="/admin/courses/course/">Courses</a></li>
+
+<li><a href="/admin/courses/video/">Videos</a></li>
+
+<li><a href="/admin/auth/user/">Students</a></li>
+
+<li><a href="/admin/courses/purchase/">Purchases</a></li>
+
+</ul>
+
+</div>
+
+<!-- Main Content -->
+
+<div class="flex-1 p-10">
+
+<h1 class="text-3xl font-bold mb-10">
+Admin Dashboard
+</h1>
+
+<!-- Stats -->
+
+<div class="grid grid-cols-4 gap-6 mb-10">
+
+<div class="bg-white p-6 rounded-xl shadow">
+<h2 class="text-gray-500">Courses</h2>
+<p class="text-3xl font-bold">{{ courses }}</p>
+</div>
+
+<div class="bg-white p-6 rounded-xl shadow">
+<h2 class="text-gray-500">Students</h2>
+<p class="text-3xl font-bold">{{ students }}</p>
+</div>
+
+<div class="bg-white p-6 rounded-xl shadow">
+<h2 class="text-gray-500">Purchases</h2>
+<p class="text-3xl font-bold">{{ purchases }}</p>
+</div>
+
+<div class="bg-white p-6 rounded-xl shadow">
+<h2 class="text-gray-500">Revenue</h2>
+<p class="text-3xl font-bold">₹{{ revenue }}</p>
+</div>
+
+</div>
+
+<!-- Chart -->
+
+<div class="bg-white p-6 rounded-xl shadow">
+
+<h2 class="text-xl font-bold mb-4">
+Sales Analytics
+</h2>
+
+<canvas id="salesChart"></canvas>
+
+</div>
+
+</div>
+
+</div>
+
+<script>
+
+const ctx = document.getElementById('salesChart');
+
+new Chart(ctx, {
+
+type: 'line',
+
+data: {
+
+labels: {{ labels|safe }},
+
+datasets: [{
+label: 'Sales',
+data: {{ data|safe }},
+borderWidth: 3
+}]
+
+}
+
+});
+
+</script>
+
+</body>
+</html>

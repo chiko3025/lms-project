@@ -1,0 +1,90 @@
+<div class="profile-card">
+
+    <div class="profile-inner">
+
+        <!-- Avatar -->
+        <div class="avatar">
+            {{ request.user.username|first|upper }}
+        </div>
+
+        <!-- User Info -->
+        <div class="user-info">
+            <p class="username">{{ request.user.username }}</p>
+            <p class="email">{{ request.user.email }}</p>
+        </div>
+
+    </div>
+
+    <!-- Actions -->
+    <div class="profile-actions">
+        <a href="/logout/">Logout</a>
+    </div>
+
+</div>
+
+<style>
+.profile-card {
+    position: fixed;
+    bottom: 15px;
+    left: 15px;
+    width: 240px;
+    background: #020617;
+    border: 1px solid #1e293b;
+    border-radius: 14px;
+    padding: 12px;
+    box-shadow: 0 0 20px rgba(0,0,0,0.6);
+    z-index: 999;
+    transition: all 0.3s ease;
+}
+
+.profile-card:hover {
+    transform: scale(1.03);
+}
+
+.profile-inner {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.avatar {
+    width: 42px;
+    height: 42px;
+    background: #38bdf8;
+    color: black;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    font-size: 16px;
+}
+
+.username {
+    margin: 0;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.email {
+    margin: 0;
+    font-size: 12px;
+    color: #94a3b8;
+}
+
+.profile-actions {
+    margin-top: 10px;
+    text-align: right;
+}
+
+.profile-actions a {
+    color: #f87171;
+    text-decoration: none;
+    font-size: 13px;
+    transition: 0.2s;
+}
+
+.profile-actions a:hover {
+    color: #ef4444;
+}
+</style>

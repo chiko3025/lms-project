@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Access Denied | XpertChamps</title>
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        /* 
+           PROFESSIONAL THEME STYLES 
+        */
+        :root {
+            --bg-body: #020617;
+            --bg-sidebar: rgba(2, 6, 23, 0.95); 
+            --bg-card: rgba(15, 23, 42, 0.7);
+            --primary: #38bdf8;
+            --primary-glow: rgba(56, 189, 248, 0.4);
+            --accent-gold: #fbbf24;
+            --text-main: #f1f5f9;
+            --text-muted: #94a3b8;
+            --danger: #ef4444;
+            --sidebar-width: 280px;
+            --sidebar-collapsed-width: 80px;
+            --transition-speed: 0.4s;
+            --card-radius: 20px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            outline: none;
+            text-decoration: none;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            color: var(--text-main);
+            background-color: var(--bg-body);
+            overflow-x: hidden;
+            display: flex;
+            min-height: 100vh;
+            position: relative;
+        }
+
+        /* --- BACKGROUND LAYERS --- */
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-image: url('https://z-cdn-media.chatglm.cn/files/40ba1855-e29f-403c-8f1e-6d8bef25ab8c.jpg?auth_key=1873811643-89cf9da713bd4da5b2afbed28d5e1e9a-0-7f9f09808ea039300f6c4f787db21aad');
+            background-size: 400px;
+            background-repeat: repeat;
+            background-attachment: fixed;
+            z-index: -2;
+            filter: saturate(140%) contrast(120%) brightness(0.6); 
+        }
+
+        body::after {
+            content: "";
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle at center, transparent 0%, #020617 90%);
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        /* --- ANIMATIONS --- */
+        @keyframes slideInLeft {
+            from { opacity: 0; transform: translateX(-30px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+
+        /* --- SIDEBAR --- */
+        .sidebar {
+            width: var(--sidebar-width);
+            background: var(--bg-sidebar);
+            backdrop-filter: blur(20px); 
+            -webkit-backdrop-filter: blur(20px);
+            height: 100vh;
+            position: fixed;
+            left: 0;
+            top: 0;
+            display: flex;
+            flex-direction: column;
+            border-right: 1px solid rgba(255,255,255,0.08);
+            transition: width var(--transition-speed) cubic-bezier(0.25, 0.8, 0.25, 1);
+            z-index: 1000;
+            overflow: hidden;
+            box-shadow: 10px 0 40px rgba(0,0,0,0.5);
+        }
+
+        .sidebar.collapsed {
+            width: var(--sidebar-collapsed-width);
+        }
+
+        .brand {
+            padding: 30px 24px;
+            display: flex;
+            align-items: center;
+            gap: 10px; 
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            animation: slideInLeft 0.5s ease-out;
+        }
+
+        .brand h2 {
+            font-size: 20px;
+            font-weight: 800;
+            background: linear-gradient(90deg, #fff, #94a3b8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            white-space: nowrap;
+            letter-spacing: -0.5px;
+        }
+
+        .sidebar.collapsed .brand h2 { display: none; }
+
+        .nav-links {
+            flex: 1;
+            padding: 24px 16px;
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .nav-item a {
+            display: flex;
+            align-items: center;
+            padding: 14px 16px;
+            color: var(--text-muted);
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            gap: 16px;
+            font-size: 15px;
+            font-weight: 500;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .nav-item a::before {
+            content: '';
+            position: absolute;
+            left: 0; top: 0; bottom: 0; width: 4px;
+            background: var(--primary);
+            transform: scaleY(0);
+            transition: transform 0.3s ease;
+            border-radius: 0 4px 4px 0;
+        }
+
+        .nav-item a:hover, .nav-item a.active {
+            background: rgba(56, 189, 248, 0.1);
+            color: #fff;
+        }
+
+        .nav-item a.active::before {
+            transform: scaleY(1);
+        }
+
+        .nav-item i {
+            min-width: 24px;
+            text-align: center;
+            font-size: 18px;
+            transition: 0.3s;
+        }
+
+        .nav-item a:hover i {
+            color: var(--primary);
+            transform: scale(1.1);
+        }
+
+        .nav-text {
+            white-space: nowrap;
+        }
+
+        .sidebar.collapsed .nav-text { display: none; }
+
+        .sidebar-profile-container {
+            margin-top: auto;
+            padding: 20px;
+            border-top: 1px solid rgba(255,255,255,0.08);
+            background: rgba(255, 255, 255, 0.03);
+        }
+
+        /* --- MAIN CONTENT --- */
+        .main-content {
+            flex: 1;
+            margin-left: var(--sidebar-width);
+            padding: 40px;
+            transition: margin-left var(--transition-speed) ease;
+            position: relative;
+            z-index: 10;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .sidebar.collapsed + .main-content {
+            margin-left: var(--sidebar-collapsed-width);
+        }
+
+        .mobile-header {
+            display: none;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            background: rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(10px);
+            padding: 15px 20px;
+            border-radius: 16px;
+            border: 1px solid rgba(255,255,255,0.1);
+            width: 100%;
+        }
+
+        .toggle-btn {
+            background: rgba(255,255,255,0.1);
+            border: none;
+            color: #fff;
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            transition: 0.3s;
+        }
+
+        .toggle-btn:hover {
+            background: var(--primary);
+            color: #0f172a;
+        }
+
+        /* --- ERROR CARD --- */
+        .error-card {
+            width: 100%;
+            max-width: 500px;
+            background: var(--bg-card);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 24px;
+            padding: 50px 30px;
+            text-align: center;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.5);
+            animation: fadeInUp 0.8s ease-out, shake 0.5s ease-in-out;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Red glow for error */
+        .error-card::after {
+            content: "";
+            position: absolute;
+            inset: -1px;
+            border-radius: 24px;
+            padding: 1px;
+            background: linear-gradient(135deg, transparent 40%, rgba(239, 68, 68, 0.5) 100%);
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            pointer-events: none;
+        }
+
+        .error-icon {
+            width: 80px;
+            height: 80px;
+            background: rgba(239, 68, 68, 0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 25px;
+            border: 2px solid rgba(239, 68, 68, 0.3);
+        }
+
+        .error-icon i {
+            font-size: 36px;
+            color: #f87171;
+        }
+
+        .error-card h1 {
+            font-size: 28px;
+            font-weight: 800;
+            margin-bottom: 15px;
+            color: #fff;
+            letter-spacing: -0.5px;
+        }
+
+        .error-card p {
+            color: var(--text-muted);
+            font-size: 16px;
+            line-height: 1.6;
+            margin-bottom: 35px;
+        }
+
+        .action-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .btn {
+            display: block;
+            width: 100%;
+            padding: 14px;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            text-align: center;
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            cursor: pointer;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), #2563eb);
+            color: #0f172a;
+            border: none;
+            box-shadow: 0 10px 25px var(--primary-glow);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 35px var(--primary-glow);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-muted);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        /* --- RESPONSIVE --- */
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+                width: 280px;
+            }
+            .sidebar.active-mobile {
+                transform: translateX(0);
+            }
+            .main-content {
+                margin-left: 0;
+                padding: 20px;
+            }
+            .mobile-header {
+                display: flex;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- SIDEBAR -->
+    <nav class="sidebar" id="sidebar">
+        <!-- Logo -->
+        <div class="brand">
+            <h2>XpertChamps</h2>
+        </div>
+
+        <!-- Navigation -->
+        <ul class="nav-links">
+            <li class="nav-item">
+                <a href="/dashboard/">
+                    <i class="fa-solid fa-chart-pie"></i>
+                    <span class="nav-text">Dashboard</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="/my-courses/">
+                    <i class="fa-solid fa-book-open"></i>
+                    <span class="nav-text">My Courses</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="/courses/">
+                    <i class="fa-solid fa-compass"></i>
+                    <span class="nav-text">Browse Courses</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="/settings/">
+                    <i class="fa-solid fa-gear"></i>
+                    <span class="nav-text">Settings</span>
+                </a>
+            </li>
+            <li class="nav-item" style="margin-top: auto;">
+                <a href="/logout/" style="color: #f87171;">
+                    <i class="fa-solid fa-right-from-bracket"></i>
+                    <span class="nav-text">Logout</span>
+                </a>
+            </li>
+        </ul>
+
+        <!-- PROFILE CARD INCLUDE -->
+        <div class="sidebar-profile-container">
+            {% if request.user.is_authenticated %}
+                {% include "components/profile_card.html" %}
+            {% endif %}
+        </div>
+    </nav>
+
+    <!-- MAIN CONTENT -->
+    <main class="main-content">
+        
+        <!-- Mobile Toggle Header -->
+        <div class="mobile-header">
+            <button class="toggle-btn" id="sidebarToggle">
+                <i class="fa-solid fa-bars"></i>
+            </button>
+            <span style="font-weight:800; font-size: 18px; color:white;">XpertChamps</span>
+            <div style="width: 40px;"></div>
+        </div>
+
+        <!-- ERROR CARD -->
+        <div class="error-card">
+            <div class="error-icon">
+                <i class="fa-solid fa-lock"></i>
+            </div>
+            
+            <h1>Access Denied</h1>
+            
+            <p>
+                You must purchase this course to watch the videos and access the learning materials.
+            </p>
+            
+            <div class="action-buttons">
+                <!-- Buy Course (Primary Action) -->
+                <a href="{% url 'buy_course' course.id %}" class="btn btn-primary">
+                    <i class="fa-solid fa-cart-shopping" style="margin-right: 8px;"></i> Buy This Course
+                </a>
+                
+                <!-- Dashboard (Secondary Action) -->
+                <a href="/dashboard/" class="btn btn-secondary">
+                    <i class="fa-solid fa-arrow-left" style="margin-right: 8px;"></i> Go to Dashboard
+                </a>
+            </div>
+        </div>
+
+    </main>
+
+    <script>
+        // Sidebar Toggle Script
+        const sidebar = document.getElementById('sidebar');
+        const sidebarToggle = document.getElementById('sidebarToggle');
+        
+        if(sidebarToggle) {
+            sidebarToggle.addEventListener('click', () => {
+                sidebar.classList.toggle('active-mobile');
+            });
+        }
+    </script>
+</body>
+</html>

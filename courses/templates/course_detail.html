@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ course.title }}</title>
+
+    <!-- Video.js CSS -->
+    <link href="https://vjs.zencdn.net/8.10.0/video-js.css" rel="stylesheet" />
+
+    <!-- Font Awesome (Added for Icons) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Font for Professional Look -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        /* ============================================================
+           THEME VARIABLES (Matching Previous Code)
+           ============================================================ */
+        :root {
+            --bg-body: #020617;       
+            --bg-sidebar: rgba(2, 6, 23, 0.85); 
+            --bg-card: rgba(15, 23, 42, 0.65);
+            --primary: #38bdf8;       
+            --primary-glow: rgba(56, 189, 248, 0.4);
+            --accent-gold: #fbbf24;   
+            --text-main: #f1f5f9;     
+            --text-muted: #94a3b8;    
+            --border: rgba(255, 255, 255, 0.1);
+            --sidebar-width: 320px;
+        }
+
+        /* ============================================================
+           GLOBAL & BACKGROUND
+           ============================================================ */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            outline: none;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            color: var(--text-main);
+            background-color: var(--bg-body);
+            overflow: hidden; /* Handle scroll in containers */
+            height: 100vh;
+            display: flex;
+        }
+
+        /* The Fabric Pattern Background */
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-image: url('https://z-cdn-media.chatglm.cn/files/40ba1855-e29f-403c-8f1e-6d8bef25ab8c.jpg?auth_key=1873811643-89cf9da713bd4da5b2afbed28d5e1e9a-0-7f9f09808ea039300f6c4f787db21aad');
+            background-size: 400px;
+            background-repeat: repeat;
+            background-attachment: fixed;
+            z-index: -2;
+            filter: saturate(140%) contrast(120%) brightness(0.6);
+        }
+
+        /* Dark Overlay */
+        body::after {
+            content: "";
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle at center, transparent 0%, #020617 90%);
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        /* ============================================================
+           CORE FUNCTIONAL CSS (PRESERVED LOGIC)
+           ============================================================ */
+        .hidden { display: none !important; }
+        .block { display: block !important; }
+
+        .video-wrapper {
+            position: relative;
+            width: 100%;
+            max-width: 1000px;
+            /* Aspect Ratio handling handled by JS/CSS container usually, 
+               but keeping fixed height logic from original if needed, 
+               here using aspect-ratio for responsiveness */
+            aspect-ratio: 16 / 9;
+            overflow: hidden;
+            border-radius: 12px;
+            background: #000;
+            box-shadow: 0 0 0 1px rgba(255,255,255,0.1);
+        }
+
+        .video-js {
+            width: 100% !important;
+            height: 100% !important;
+            background-color: black;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .vjs-tech {
+            object-fit: contain !important;
+        }
+
+        /* Security Overlays (Strictly Preserved) */
+        .top-overlay {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 9%;
+            background: black; z-index: 10; pointer-events: auto;
+        }
+
+        .bottom-overlay {
+            position: absolute;
+            bottom: 0; left: 0; width: 100%; height: 8%;
+            background: black; z-index: 10; pointer-events: auto;
+        }
+
+        .middle-overlay {
+            position: absolute;
+            top: 9%; bottom: 8%; left: 0; width: 100%;
+            background: transparent; z-index: 9; 
+            pointer-events: ; /* Kept as original from user request */
+        }
+
+        /* Ensure controls are clickable */
+        .vjs-control-bar, .vjs-big-play-button {
+            z-index: 20 !important; 
+            position: relative;
+        }
+
+        /* ============================================================
+           PROFESSIONAL UI LAYOUT (NEW STYLING)
+           ============================================================ */
+        
+        .main-container {
+            display: flex;
+            width: 100%;
+            height: 100vh;
+        }
+
+        /* --- Sidebar Styling --- */
+        .sidebar {
+            width: var(--sidebar-width);
+            background: var(--bg-sidebar);
+            backdrop-filter: blur(20px); 
+            -webkit-backdrop-filter: blur(20px);
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            padding: 30px 20px;
+            z-index: 100;
+            overflow-y: auto;
+            box-shadow: 10px 0 40px rgba(0,0,0,0.5);
+            transition: transform 0.4s ease;
+        }
+
+        /* Custom Scrollbar */
+        .sidebar::-webkit-scrollbar { width: 6px; }
+        .sidebar::-webkit-scrollbar-track { background: transparent; }
+        .sidebar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 10px; }
+        .sidebar::-webkit-scrollbar-thumb:hover { background: var(--primary); }
+
+        .sidebar h2 {
+            font-size: 20px;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            color: #fff;
+            font-weight: 700;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: linear-gradient(90deg, #fff, #94a3b8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* Sidebar Buttons */
+        .sidebar button {
+            width: 100%;
+            text-align: left;
+            padding: 14px 16px;
+            margin-bottom: 10px;
+            border: 1px solid transparent;
+            background: rgba(255, 255, 255, 0.02);
+            color: var(--text-muted);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            font-size: 14px;
+            font-weight: 500;
+            font-family: 'Inter', sans-serif;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        /* Hover State */
+        .sidebar button:hover {
+            background: rgba(56, 189, 248, 0.1);
+            color: #fff;
+            border-color: rgba(56, 189, 248, 0.2);
+            transform: translateX(4px);
+        }
+
+        /* Active State (Played via JS) */
+        .sidebar button.active-vid {
+            background: linear-gradient(90deg, rgba(56, 189, 248, 0.15), transparent);
+            color: var(--primary);
+            border-color: rgba(56, 189, 248, 0.3);
+            border-left: 3px solid var(--primary);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+        
+        .sidebar button.active-vid i {
+            color: var(--primary);
+            text-shadow: 0 0 8px var(--primary-glow);
+        }
+
+        .sidebar button i {
+            font-size: 16px;
+            width: 20px;
+            text-align: center;
+            transition: 0.3s;
+        }
+
+        /* --- Main Content Area --- */
+        .content {
+            flex: 1;
+            padding: 40px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+        }
+
+        /* Glass Video Container */
+        .video-card {
+            background: var(--bg-card);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            padding: 12px; /* Padding for the border effect */
+            border-radius: 24px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 20px 50px -12px rgba(0, 0, 0, 0.5);
+            width: 100%;
+            max-width: 1100px;
+            margin-bottom: 30px;
+            position: relative;
+            transition: all 0.4s ease;
+        }
+
+        /* Gold Border Glow on Hover */
+        .video-card::after {
+            content: "";
+            position: absolute;
+            inset: -1px;
+            border-radius: 24px;
+            padding: 1px;
+            background: linear-gradient(135deg, transparent 40%, var(--accent-gold) 100%);
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            opacity: 0;
+            transition: opacity 0.4s ease;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .video-card:hover::after {
+            opacity: 1;
+        }
+
+        /* Headers */
+        .content h1 {
+            font-size: 32px;
+            margin-bottom: 10px;
+            text-shadow: 0 4px 20px rgba(0,0,0,0.5);
+            font-weight: 800;
+            text-align: center;
+            background: linear-gradient(to right, #fff, #94a3b8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .content > p {
+            color: var(--text-muted);
+            text-align: center;
+            max-width: 700px;
+            margin-bottom: 30px;
+            line-height: 1.6;
+            font-size: 16px;
+        }
+
+        /* Title below video */
+        #display-title {
+            color: #fff;
+            font-size: 18px;
+            font-weight: 600;
+            text-align: center;
+            padding: 12px 24px;
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.05);
+            border-radius: 50px;
+            backdrop-filter: blur(5px);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+            transition: 0.3s;
+            animation: fadeIn 1s ease forwards;
+        }
+
+        /* --- Animations --- */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes slideInLeft {
+            from { opacity: 0; transform: translateX(-20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        /* Apply animations to elements */
+        .sidebar { animation: slideInLeft 0.6s ease-out; }
+        .video-card { animation: fadeIn 0.8s ease-out 0.2s backwards; }
+        .content h1 { animation: fadeIn 0.8s ease-out 0.1s backwards; }
+        
+        /* Button staggered animation */
+        .sidebar button {
+            opacity: 0;
+            animation: fadeIn 0.5s ease forwards;
+        }
+
+        /* --- Responsive --- */
+        @media (max-width: 900px) {
+            body {
+                flex-direction: column;
+                height: auto;
+                overflow-y: auto;
+            }
+            .main-container {
+                flex-direction: column;
+            }
+            .sidebar {
+                width: 100%;
+                height: auto;
+                max-height: 250px;
+                padding: 20px;
+                order: 2; /* Put content first on mobile? Or list first? Usually list first or collapsible. Let's keep list first for nav. */
+                order: 1;
+            }
+            .content {
+                padding: 20px;
+                order: 2;
+                height: auto;
+            }
+            .video-card {
+                padding: 6px;
+                border-radius: 16px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="main-container">
+
+    <!-- Sidebar with Professional Styling -->
+    <div class="sidebar">
+        <h2>
+            <i class="fa-solid fa-list-ul" style="color:var(--primary);"></i> 
+            Course Content
+        </h2>
+
+        {% for video in videos %}
+            <button id="btn-{{ video.id }}" onclick="switchVideo('{{ video.id }}')" class="{% if forloop.first %}active-vid{% endif %}">
+                <i class="fa-solid fa-circle-play"></i>
+                <span>{{ video.title }}</span>
+            </button>
+        {% endfor %}
+    </div>
+
+    <!-- Content Area -->
+    <div class="content">
+
+        <h1>{{ course.title }}</h1>
+        <p>{{ course.description }}</p>
+
+        <div class="video-card">
+            
+            {% for video in videos %}
+            <div id="video-wrapper-{{ video.id }}" class="video-wrapper {% if forloop.first %}block{% else %}hidden{% endif %}">
+                <!-- Video.js Section (Untouched Logic) -->
+                <video
+                    id="player{{ video.id }}"
+                    class="video-js vjs-default-skin"
+                    controls
+                    preload="auto"
+                    data-setup='{
+                        "techOrder": ["youtube"],
+                        "sources": [{
+                            "type": "video/youtube",
+                            "src": "https://www.youtube.com/watch?v={{ video.youtube_url }}"
+                        }]
+                    }'>
+                </video>
+            </div>
+            {% endfor %}
+
+        </div>
+
+        <h3 id="display-title">
+            {% if videos %}{{ videos.0.title }}{% endif %}
+        </h3>
+
+    </div>
+</div>
+
+<script src="https://vjs.zencdn.net/8.10.0/video.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/videojs-youtube@3.0.1/dist/Youtube.min.js"></script>
+
+<script>
+
+/* ============================================================
+       ORIGINAL BACKEND LOGIC (100% PRESERVED & ENHANCED)
+   ============================================================ */
+
+const videoTitles = {
+    {% for video in videos %}
+        "{{ video.id }}": "{{ video.title }}",
+    {% endfor %}
+};
+
+let players = {};
+let currentVideoId = "{% if videos %}{{ videos.0.id }}{% endif %}";
+
+{% for video in videos %}
+players["{{ video.id }}"] = videojs("player{{ video.id }}");
+
+players["{{ video.id }}"].ready(function(){
+
+    let player = this;
+
+    player.el().style.transition = "filter 0.3s ease";
+
+    // Security Overlays
+    let topOverlay = document.createElement("div");
+    topOverlay.className = "top-overlay";
+
+    let bottomOverlay = document.createElement("div");
+    bottomOverlay.className = "bottom-overlay";
+
+    let middleOverlay = document.createElement("div");
+    middleOverlay.className = "middle-overlay";
+
+    player.el().appendChild(topOverlay);
+    player.el().appendChild(bottomOverlay);
+    player.el().appendChild(middleOverlay);
+
+    // Prevent right click on overlays
+    [topOverlay, bottomOverlay, middleOverlay].forEach(el => {
+        el.addEventListener("contextmenu", function(e){
+            e.preventDefault();
+        });
+    });
+
+    // Resume Logic
+    let progressData = {{ video_progress|safe }};
+    let resumeTime = progressData["{{ video.id }}"] || 0;
+
+    if(resumeTime > 0){
+        player.currentTime(resumeTime);
+    }
+
+    // Save Progress Logic
+    player.on('timeupdate', function(){
+        let seconds = Math.floor(player.currentTime());
+
+        if(seconds % 5 === 0){
+            fetch("/save-progress/",{
+                method:"POST",
+                headers:{
+                    "Content-Type":"application/json",
+                    "X-CSRFToken":"{{ csrf_token }}"
+                },
+                body:JSON.stringify({
+                    video_id:"{{ video.id }}",
+                    seconds: seconds
+                })
+            });
+        }
+    });
+
+});
+{% endfor %}
+
+function switchVideo(videoId){
+    // 1. Hide all wrappers
+    document.querySelectorAll('[id^="video-wrapper-"]').forEach(el => {
+        el.style.display = "none";
+        el.classList.remove('block'); 
+        el.classList.add('hidden');
+    });
+
+    // 2. Pause all players
+    Object.values(players).forEach(p => p.pause());
+
+    // 3. Show target wrapper
+    const targetWrapper = document.getElementById('video-wrapper-' + videoId);
+    targetWrapper.style.display = "block";
+    targetWrapper.classList.remove('hidden');
+    targetWrapper.classList.add('block');
+    
+    // 4. Re-trigger Animation (Visual Enhancement)
+    void targetWrapper.offsetWidth; 
+
+    // 5. Update Text
+    const titleEl = document.getElementById('display-title');
+    titleEl.style.opacity = '0';
+    setTimeout(() => {
+        titleEl.textContent = videoTitles[videoId];
+        titleEl.style.opacity = '1';
+    }, 200);
+
+    // 6. Update UI State (Sidebar Buttons)
+    document.querySelectorAll('.sidebar button').forEach(btn => {
+        btn.classList.remove('active-vid');
+    });
+    const activeBtn = document.getElementById('btn-' + videoId);
+    if(activeBtn) activeBtn.classList.add('active-vid');
+
+    currentVideoId = videoId;
+}
+
+// Global Security (Preserved)
+document.addEventListener("contextmenu", function(e) {
+    e.preventDefault();
+});
+
+let blurTimeout = null;
+let isBlurLocked = false;
+
+function applyBlur() {
+    Object.values(players).forEach(player => {
+        player.el().style.filter = "blur(40px) brightness(0.5)";
+    });
+}
+
+function removeBlur() {
+    if (isBlurLocked) return;
+
+    Object.values(players).forEach(player => {
+        player.el().style.filter = "none";
+    });
+}
+
+function triggerBlurLock() {
+    applyBlur();
+    isBlurLocked = true;
+
+    if (blurTimeout) clearTimeout(blurTimeout);
+
+    blurTimeout = setTimeout(() => {
+        isBlurLocked = false;
+        removeBlur();
+    }, 10000);
+}
+
+document.addEventListener("visibilitychange", function () {
+    if (document.hidden) triggerBlurLock();
+});
+
+window.addEventListener("blur", triggerBlurLock);
+window.addEventListener("focus", removeBlur);
+
+setInterval(() => {
+    if (isBlurLocked) applyBlur();
+}, 500);
+
+document.addEventListener("keydown", function(e) {
+    if (
+        e.key === "F12" ||
+        (e.ctrlKey && e.shiftKey && e.key === "I") ||
+        (e.ctrlKey && e.key === "u") ||
+        (e.ctrlKey && e.key === "s")
+    ) {
+        e.preventDefault();
+    }
+});
+
+</script>
+
+</body>
+</html>

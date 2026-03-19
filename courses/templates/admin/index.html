@@ -1,0 +1,37 @@
+{% extends "admin/base_site.html" %}
+
+{% block content %}
+
+<div class="p-6">
+
+<h1 class="text-3xl font-bold mb-6">
+Admin Dashboard
+</h1>
+
+<div class="grid grid-cols-4 gap-6">
+
+<a href="/admin/courses/course/" class="bg-blue-500 text-white p-6 rounded-xl shadow">
+<h2 class="text-xl font-semibold">Courses</h2>
+<p>Manage all courses</p>
+</a>
+
+<a href="/admin/courses/video/" class="bg-green-500 text-white p-6 rounded-xl shadow">
+<h2 class="text-xl font-semibold">Videos</h2>
+<p>Manage course videos</p>
+</a>
+
+<a href="/admin/courses/purchase/" class="bg-purple-500 text-white p-6 rounded-xl shadow">
+<h2 class="text-xl font-semibold">Purchases</h2>
+<p>View user purchases</p>
+</a>
+
+<a href="/admin/courses/videoprogress/" class="bg-red-500 text-white p-6 rounded-xl shadow">
+<h2 class="text-xl font-semibold">Video Progress</h2>
+<p>Track student progress</p>
+</a>
+
+</div>
+
+</div>
+
+{% endblock %}

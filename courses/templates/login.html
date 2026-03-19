@@ -1,0 +1,230 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<style>
+    /* 
+       PROFESSIONAL THEME STYLES 
+    */
+
+    :root {
+        --bg-body: #020617;
+        --primary: #38bdf8;
+        --primary-glow: rgba(56, 189, 248, 0.4);
+        --accent-gold: #fbbf24;
+        --text-main: #f1f5f9;
+        --text-muted: #94a3b8;
+        --glass-bg: rgba(15, 23, 42, 0.7);
+        --glass-border: rgba(255, 255, 255, 0.1);
+    }
+
+    /* Full page background wrapper */
+    .auth-page-wrapper {
+        min-height: 100vh;
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        background-color: transparent; /* MADE TRANSPARENT */
+        padding: 20px;
+    }
+
+    /* Dark overlay for readability - Set to transparent to show full background */
+    .auth-page-wrapper::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: transparent; /* MADE TRANSPARENT (Removed dark vignette) */
+        z-index: 0;
+    }
+
+    /* --- Login Card --- */
+    .login-card {
+        position: relative;
+        z-index: 1;
+        width: 100%;
+        max-width: 420px;
+        background: var(--glass-bg);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border: 1px solid var(--glass-border);
+        border-radius: 24px;
+        padding: 40px;
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.6);
+        animation: slideUpFade 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+        overflow: hidden; /* For border glow */
+    }
+
+    /* Gold Border Glow Effect */
+    .login-card::after {
+        content: "";
+        position: absolute;
+        inset: -1px;
+        border-radius: 24px;
+        padding: 1px;
+        background: linear-gradient(135deg, transparent 40%, var(--accent-gold) 100%);
+        -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+        -webkit-mask-composite: xor;
+        mask-composite: exclude;
+        opacity: 0.6;
+        pointer-events: none;
+    }
+
+    /* Typography */
+    .login-card h2 {
+        color: #fff;
+        text-align: center;
+        font-size: 28px;
+        font-weight: 800;
+        margin-bottom: 10px;
+        letter-spacing: -0.5px;
+        background: linear-gradient(to right, #fff, #94a3b8);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .login-subtitle {
+        text-align: center;
+        color: var(--text-muted);
+        font-size: 14px;
+        margin-bottom: 30px;
+    }
+
+    /* Form Groups */
+    .form-group {
+        margin-bottom: 24px;
+        position: relative;
+    }
+
+    .form-group label {
+        display: block;
+        color: var(--text-muted);
+        font-size: 12px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-bottom: 8px;
+        margin-left: 4px;
+    }
+
+    /* Input Fields */
+    .form-group input {
+        width: 100%;
+        padding: 14px 16px;
+        background: rgba(0, 0, 0, 0.3);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 12px;
+        color: #fff;
+        font-size: 15px;
+        font-family: inherit;
+        transition: all 0.3s ease;
+        box-shadow: inset 0 2px 4px rgba(0,0,0,0.2);
+    }
+
+    .form-group input:focus {
+        outline: none;
+        border-color: var(--primary);
+        background: rgba(0, 0, 0, 0.5);
+        box-shadow: 0 0 0 4px rgba(56, 189, 248, 0.1), inset 0 2px 4px rgba(0,0,0,0.2);
+    }
+
+    .form-group input::placeholder {
+        color: rgba(255,255,255,0.2);
+    }
+
+    /* Submit Button */
+    .btn-submit {
+        width: 100%;
+        padding: 14px;
+        background: linear-gradient(135deg, var(--primary), #2563eb);
+        color: #fff;
+        border: none;
+        border-radius: 12px;
+        font-size: 16px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px var(--primary-glow);
+        position: relative;
+        overflow: hidden;
+        margin-top: 10px;
+    }
+
+    .btn-submit:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px var(--primary-glow);
+    }
+
+    .btn-submit:active {
+        transform: translateY(0);
+    }
+
+    /* Footer Link */
+    .auth-footer {
+        text-align: center;
+        margin-top: 24px;
+        color: var(--text-muted);
+        font-size: 14px;
+    }
+
+    .auth-footer a {
+        color: var(--primary);
+        text-decoration: none;
+        font-weight: 600;
+        transition: 0.3s;
+    }
+
+    .auth-footer a:hover {
+        color: #fff;
+        text-shadow: 0 0 8px var(--primary-glow);
+        text-decoration: underline;
+    }
+
+    /* Animation */
+    @keyframes slideUpFade {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+</style>
+
+<div class="auth-page-wrapper">
+    
+    <div class="login-card">
+        
+        <h2>Welcome Back</h2>
+        <p class="login-subtitle">Login to access your courses</p>
+
+        <form method="POST">
+            {% csrf_token %}
+
+            <div class="form-group">
+                <label for="id_username">Username</label>
+                <input type="text" name="username" id="id_username" placeholder="Enter your username" required autocomplete="username">
+            </div>
+
+            <div class="form-group">
+                <label for="id_password">Password</label>
+                <input type="password" name="password" id="id_password" placeholder="Enter your password" required autocomplete="current-password">
+            </div>
+
+            <button type="submit" class="btn-submit">
+                Login <i class="fa-solid fa-arrow-right" style="margin-left: 8px;"></i>
+            </button>
+        </form>
+
+        <div class="auth-footer">
+            <p>Don't have an account? <a href="/signup/">Sign up</a></p>
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

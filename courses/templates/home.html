@@ -1,0 +1,694 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>XpertChamps</title>
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+    <style>
+        /* 
+           PROFESSIONAL THEME STYLES 
+        */
+        :root {
+            --bg-body: #020617;
+            --primary: #38bdf8;
+            --primary-glow: rgba(56, 189, 248, 0.4);
+            --accent-gold: #fbbf24;
+            --text-main: #f1f5f9;
+            --text-muted: #94a3b8;
+            --glass-bg: rgba(15, 23, 42, 0.6);
+            --glass-border: rgba(255, 255, 255, 0.1);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            outline: none;
+            text-decoration: none;
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* --- BACKGROUND LAYERS --- */
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            /* The Fabric Pattern */
+            background-image: url('https://z-cdn-media.chatglm.cn/files/40ba1855-e29f-403c-8f1e-6d8bef25ab8c.jpg?auth_key=1873811643-89cf9da713bd4da5b2afbed28d5e1e9a-0-7f9f09808ea039300f6c4f787db21aad');
+            background-size: 400px;
+            background-repeat: repeat;
+            background-attachment: fixed;
+            z-index: -2;
+            filter: saturate(140%) contrast(120%) brightness(0.6);
+        }
+
+        /* Dark Overlay */
+        body::after {
+            content: "";
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle at center, transparent 0%, #020617 90%);
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        /* --- NAVIGATION --- */
+        nav {
+            position: fixed;
+            top: 0; left: 0; width: 100%;
+            padding: 20px 50px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(2, 6, 23, 0.7);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border-bottom: 1px solid var(--glass-border);
+            z-index: 1000;
+            animation: slideDown 0.8s ease-out;
+        }
+
+        nav .logo h1 {
+            font-size: 24px;
+            font-weight: 900;
+            background: linear-gradient(135deg, #fff, #94a3b8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            cursor: pointer;
+            letter-spacing: -0.5px;
+            transition: 0.3s;
+        }
+
+        nav .logo h1:hover {
+            text-shadow: 0 0 20px rgba(255,255,255,0.3);
+        }
+
+        nav .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 30px;
+        }
+
+        nav .nav-links a {
+            color: var(--text-muted);
+            font-weight: 500;
+            font-size: 15px;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        nav .nav-links a:hover {
+            color: #fff;
+            text-shadow: 0 0 10px rgba(255,255,255,0.4);
+        }
+
+        /* Button styling for Nav Links */
+        .btn-nav {
+            padding: 10px 24px;
+            border-radius: 50px;
+            border: 1px solid var(--glass-border);
+            background: rgba(255,255,255,0.05);
+            transition: all 0.3s ease;
+        }
+
+        .btn-nav:hover {
+            background: rgba(255,255,255,0.1);
+            border-color: rgba(255,255,255,0.3);
+            transform: translateY(-2px);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), #2563eb) !important;
+            color: #fff !important;
+            border: none !important;
+            box-shadow: 0 4px 15px var(--primary-glow);
+            font-weight: 700;
+        }
+
+        .btn-primary:hover {
+            box-shadow: 0 8px 25px var(--primary-glow);
+            transform: translateY(-2px) scale(1.05);
+        }
+
+        /* --- MAIN HERO SECTION --- */
+        main {
+            width: 100%;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            padding-top: 80px; /* Offset for fixed nav */
+        }
+
+        /* Ambient Glow Behind Text */
+        .ambient-glow {
+            position: absolute;
+            top: 40%; left: 50%;
+            transform: translate(-50%, -50%);
+            width: 600px; height: 600px;
+            background: radial-gradient(circle, rgba(56, 189, 248, 0.15) 0%, transparent 70%);
+            z-index: 0;
+            filter: blur(60px);
+            animation: pulseGlow 5s infinite alternate;
+        }
+
+        .hero-section {
+            text-align: center;
+            z-index: 10;
+            max-width: 900px;
+            padding: 0 20px;
+            margin-bottom: 100px;
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(56, 189, 248, 0.1);
+            border: 1px solid rgba(56, 189, 248, 0.3);
+            padding: 8px 20px;
+            border-radius: 50px;
+            color: var(--primary);
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 30px;
+            backdrop-filter: blur(5px);
+            box-shadow: 0 0 20px rgba(56, 189, 248, 0.2);
+            animation: fadeInDown 0.8s ease-out 0.2s backwards;
+        }
+
+        h1 {
+            font-size: clamp(3rem, 6vw, 5rem);
+            font-weight: 900;
+            line-height: 1.1;
+            margin-bottom: 24px;
+            background: linear-gradient(to bottom right, #ffffff 30%, #94a3b8 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0 10px 20px rgba(0,0,0,0.5));
+            letter-spacing: -2px;
+            animation: fadeInUp 0.8s ease-out 0.4s backwards;
+        }
+
+        p.hero-text {
+            font-size: clamp(1.1rem, 2vw, 1.35rem);
+            color: var(--text-muted);
+            margin-bottom: 40px;
+            max-width: 650px;
+            margin-left: auto;
+            margin-right: auto;
+            line-height: 1.7;
+            animation: fadeInUp 0.8s ease-out 0.6s backwards;
+        }
+
+        .hero-actions {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            animation: fadeInUp 0.8s ease-out 0.8s backwards;
+        }
+
+        .btn-large {
+            padding: 16px 40px;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 700;
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn-large.primary {
+            background: linear-gradient(135deg, var(--primary), #2563eb);
+            color: #fff;
+            box-shadow: 0 10px 25px var(--primary-glow);
+        }
+
+        .btn-large.primary:hover {
+            transform: translateY(-4px) scale(1.05);
+            box-shadow: 0 15px 35px var(--primary-glow);
+        }
+
+        /* --- ABOUT SECTION --- */
+        .about-section {
+            padding: 100px 20px;
+            position: relative;
+            z-index: 10;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+
+        .section-header h2 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 15px;
+            background: linear-gradient(to right, #fff, #94a3b8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .section-header p {
+            color: var(--text-muted);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .course-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .syllabus-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 30px;
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+            animation: fadeInUp 0.8s ease-out backwards;
+        }
+
+        .syllabus-card:hover {
+            transform: translateY(-10px);
+            border-color: var(--primary);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+        }
+
+        .syllabus-card::after {
+            content: "";
+            position: absolute;
+            inset: -1px;
+            border-radius: 20px;
+            padding: 1px;
+            background: linear-gradient(135deg, transparent 40%, var(--accent-gold) 100%);
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            opacity: 0;
+            transition: 0.4s;
+        }
+
+        .syllabus-card:hover::after {
+            opacity: 1;
+        }
+
+        .card-icon {
+            font-size: 40px;
+            margin-bottom: 20px;
+            color: var(--primary);
+            text-shadow: 0 0 15px var(--primary-glow);
+        }
+
+        .syllabus-card h3 {
+            color: #fff;
+            font-size: 20px;
+            margin-bottom: 15px;
+            font-weight: 700;
+        }
+
+        .syllabus-list {
+            list-style: none;
+            margin-top: 15px;
+        }
+
+        .syllabus-list li {
+            color: var(--text-muted);
+            font-size: 14px;
+            margin-bottom: 8px;
+            padding-left: 20px;
+            position: relative;
+            line-height: 1.5;
+        }
+
+        .syllabus-list li::before {
+            content: "•";
+            color: var(--accent-gold);
+            position: absolute;
+            left: 0;
+            font-weight: bold;
+        }
+
+        /* Staggered Animation for Cards */
+        .syllabus-card:nth-child(1) { animation-delay: 0.1s; }
+        .syllabus-card:nth-child(2) { animation-delay: 0.2s; }
+        .syllabus-card:nth-child(3) { animation-delay: 0.3s; }
+        .syllabus-card:nth-child(4) { animation-delay: 0.4s; }
+        .syllabus-card:nth-child(5) { animation-delay: 0.5s; }
+
+        /* --- FOOTER --- */
+        footer {
+            margin-top: auto;
+            background: #020617;
+            border-top: 1px solid var(--glass-border);
+            padding: 60px 20px 20px;
+            position: relative;
+            z-index: 10;
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+
+        .footer-col h4 {
+            color: #fff;
+            font-size: 18px;
+            margin-bottom: 20px;
+            font-weight: 700;
+        }
+
+        .footer-col p {
+            color: var(--text-muted);
+            line-height: 1.6;
+            font-size: 14px;
+            margin-bottom: 15px;
+        }
+
+        .contact-info i {
+            color: var(--primary);
+            width: 20px;
+            margin-right: 10px;
+        }
+
+        .contact-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 12px;
+            color: var(--text-muted);
+            font-size: 14px;
+            transition: 0.3s;
+        }
+
+        .contact-item:hover {
+            color: var(--primary);
+            padding-left: 5px;
+        }
+
+        .footer-links a {
+            display: block;
+            color: var(--text-muted);
+            font-size: 14px;
+            margin-bottom: 10px;
+            transition: 0.3s;
+        }
+
+        .footer-links a:hover {
+            color: var(--accent-gold);
+            padding-left: 5px;
+        }
+
+        .social-icons {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .social-icons a {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.05);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            transition: 0.3s;
+            border: 1px solid transparent;
+        }
+
+        .social-icons a:hover {
+            background: var(--primary);
+            box-shadow: 0 0 15px var(--primary-glow);
+            transform: translateY(-3px);
+        }
+
+        .copyright {
+            text-align: center;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255,255,255,0.05);
+            color: rgba(255,255,255,0.3);
+            font-size: 12px;
+        }
+
+        /* --- ANIMATIONS --- */
+        @keyframes slideDown {
+            from { transform: translateY(-100%); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes pulseGlow {
+            0% { opacity: 0.5; transform: translate(-50%, -50%) scale(1); }
+            100% { opacity: 0.8; transform: translate(-50%, -50%) scale(1.2); }
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            nav {
+                padding: 15px 20px;
+                flex-direction: column;
+                gap: 15px;
+            }
+            nav .nav-links {
+                gap: 10px;
+                width: 100%;
+                justify-content: center;
+                flex-wrap: wrap;
+            }
+            .btn-nav {
+                padding: 8px 16px;
+                font-size: 13px;
+            }
+            .hero-section {
+                margin-bottom: 50px;
+            }
+            .course-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- BACKGROUND AMBIENCE -->
+    <div class="ambient-glow"></div>
+
+    <!-- NAVIGATION -->
+    <nav>
+        <div class="logo">
+            <!-- Updated Brand Name -->
+            <h1 onclick="window.scrollTo(0,0)">XpertChamps</h1>
+        </div>
+
+        <div class="nav-links">
+            <a href="#home">Home</a>
+            <a href="#about">About</a>
+            <a href="/login/" class="btn-nav">Login</a>
+            <a href="/signup/" class="btn-nav btn-primary">Sign Up</a>
+        </div>
+    </nav>
+
+    <!-- MAIN CONTENT -->
+    <main id="home">
+
+        <!-- HERO SECTION -->
+        <section class="hero-section">
+
+            <div class="hero-badge">
+                <span style="background:var(--primary); width:8px; height:8px; border-radius:50%; display:block;"></span>
+                New Courses Available Now
+            </div>
+
+            <h1>
+                Welcome to XpertChamps
+            </h1>
+
+            <p class="hero-text">
+                Your platform for mastering web development. Learn to build professional, scalable applications with our expert-led curriculum.
+            </p>
+            
+            <div class="hero-actions">
+                <a href="#about" class="btn-large" style="background: rgba(255,255,255,0.05); color: #fff; border: 1px solid rgba(255,255,255,0.1);">
+                    View Curriculum
+                </a>
+                <a href="/signup/" class="btn-large primary">
+                    Get Started <i class="fa-solid fa-arrow-right"></i>
+                </a>
+            </div>
+
+        </section>
+
+    </main>
+
+    <!-- ABOUT SECTION (Curriculum) -->
+    <section id="about" class="about-section">
+        
+        <div class="section-header">
+            <h2>What You'll Learn</h2>
+            <p>A comprehensive roadmap designed to take you from beginner to professional developer.</p>
+        </div>
+
+        <div class="course-grid">
+            
+            <!-- HTML Card -->
+            <div class="syllabus-card">
+                <div class="card-icon"><i class="fa-brands fa-html5"></i></div>
+                <h3>HTML5 Structure</h3>
+                <p>Master the foundation of the web.</p>
+                <ul class="syllabus-list">
+                    <li>Semantic markup elements</li>
+                    <li>Forms and validation</li>
+                    <li>Accessibility standards (A11y)</li>
+                    <li>SEO best practices</li>
+                </ul>
+            </div>
+
+            <!-- Tailwind CSS Card -->
+            <div class="syllabus-card">
+                <div class="card-icon"><i class="fa-solid fa-wind"></i></div>
+                <h3>Tailwind CSS</h3>
+                <p>Rapidly build modern websites without leaving your HTML.</p>
+                <ul class="syllabus-list">
+                    <li>Utility-first fundamentals</li>
+                    <li>Responsive design & breakpoints</li>
+                    <li>Custom configuration</li>
+                    <li>Dark mode implementation</li>
+                </ul>
+            </div>
+
+            <!-- Python Card -->
+            <div class="syllabus-card">
+                <div class="card-icon"><i class="fa-brands fa-python"></i></div>
+                <h3>Python Programming</h3>
+                <p>Learn the logic behind powerful backend systems.</p>
+                <ul class="syllabus-list">
+                    <li>Variables, loops, and functions</li>
+                    <li>Data structures (Lists, Dicts)</li>
+                    <li>Object-Oriented Programming</li>
+                    <li>File handling & exceptions</li>
+                </ul>
+            </div>
+
+            <!-- JavaScript Card -->
+            <div class="syllabus-card">
+                <div class="card-icon"><i class="fa-brands fa-js"></i></div>
+                <h3>JavaScript (ES6+)</h3>
+                <p>Bring interactivity and life to your web pages.</p>
+                <ul class="syllabus-list">
+                    <li>DOM manipulation</li>
+                    <li>Async/Await & Fetch API</li>
+                    <li>ES6 modern syntax</li>
+                    <li>Event handling</li>
+                </ul>
+            </div>
+
+            <!-- Django Card -->
+            <div class="syllabus-card">
+                <div class="card-icon"><i class="fa-brands fa-python"></i></div> <!-- Using Python icon or generic web icon -->
+                <h3>Django Framework</h3>
+                <p>Build secure, scalable web applications rapidly.</p>
+                <ul class="syllabus-list">
+                    <li>MVT Architecture explained</li>
+                    <li>Django ORM & Databases</li>
+                    <li>User Authentication & Permissions</li>
+                    <li>REST API Development</li>
+                </ul>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- FOOTER (Contact Details) -->
+    <footer id="contact-footer">
+        <div class="footer-content">
+            
+            <!-- Brand Column -->
+            <div class="footer-col">
+                <h4>XpertChamps</h4>
+                <p>Empowering the next generation of developers with cutting-edge skills and real-world projects.</p>
+                <div class="social-icons">
+                    <a href="#"><i class="fa-brands fa-twitter"></i></a>
+                    <a href="#"><i class="fa-brands fa-linkedin-in"></i></a>
+                    <a href="#"><i class="fa-brands fa-github"></i></a>
+                    <a href="#"><i class="fa-brands fa-instagram"></i></a>
+                </div>
+            </div>
+
+            <!-- Quick Links -->
+            <div class="footer-col">
+                <h4>Quick Links</h4>
+                <div class="footer-links">
+                    <a href="#home">Home</a>
+                    <a href="#about">About Curriculum</a>
+                    <a href="/login/">Student Login</a>
+                    <a href="/signup/">Create Account</a>
+                </div>
+            </div>
+
+            <!-- Contact Details -->
+            <div class="footer-col contact-info">
+                <h4>Contact Us</h4>
+                <div class="contact-item">
+                    <i class="fa-solid fa-envelope"></i>
+                    <span>support@xpertchamps.com</span>
+                </div>
+                <div class="contact-item">
+                    <i class="fa-solid fa-phone"></i>
+                    <span>+1 (555) 123-4567</span>
+                </div>
+                <div class="contact-item">
+                    <i class="fa-solid fa-location-dot"></i>
+                    <span>123 Tech Avenue, Dev City</span>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="copyright">
+            &copy; 2023 XpertChamps. All rights reserved.
+        </div>
+    </footer>
+
+</body>
+</html>
