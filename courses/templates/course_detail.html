@@ -81,7 +81,7 @@
         .video-wrapper {
             position: relative;
             width: 100%;
-            max-width: 1000px;
+            max-width: 100%;
             /* Aspect Ratio handling handled by JS/CSS container usually, 
                but keeping fixed height logic from original if needed, 
                here using aspect-ratio for responsiveness */
@@ -101,7 +101,9 @@
         }
 
         .vjs-tech {
-            object-fit: contain !important;
+            width: 100% !important;
+            height: 100% !important;
+            object-fit: cover !important; /* 🔥 removes empty space */
         }
 
         /* Security Overlays (Strictly Preserved) */
