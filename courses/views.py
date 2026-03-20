@@ -12,6 +12,9 @@ from django.db.models.functions import TruncMonth
 from django.views.decorators.csrf import csrf_exempt
 from django.http import HttpResponse
 
+def ping(request):
+    return HttpResponse("OK")
+
 @csrf_exempt   # ✅ keep this for now (avoids 400 issue)
 @login_required
 def verify_payment(request):

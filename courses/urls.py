@@ -12,6 +12,7 @@ urlpatterns = [
     path('save-progress/', views.save_progress, name="save_progress"),
     path("admin-dashboard/", views.admin_dashboard, name="admin_dashboard"),
     path("verify-payment/", views.verify_payment, name="verify_payment"),
+    path("ping/", views.ping),
 ]
 
 # ✅ THIS MUST BE OUTSIDE urlpatterns
